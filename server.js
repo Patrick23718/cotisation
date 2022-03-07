@@ -4,6 +4,7 @@ var helmet = require("helmet");
 const bodyParser = require("body-parser");
 // const cors = require("cors");
 const db = require("./api/models");
+const dbConfig = require("./api/config/db.configs");
 
 const app = express();
 const Role = db.role;
@@ -56,8 +57,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 db.mongoose
   .connect(
+    `${dbConfig.URL}`,
     // `${process.env.DB_URL}`,
-    `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+    // `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: false,

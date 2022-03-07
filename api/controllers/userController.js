@@ -4,6 +4,7 @@ const User = db.user;
 // const Code = db.code;
 const Role = db.role;
 const axios = require("axios");
+const config = require("../config/auth.config");
 
 const ROLES = db.ROLES;
 const mongoose = require("mongoose");
@@ -78,7 +79,7 @@ exports.signin = (req, res) => {
       }
       var token = jwt.sign(
         { id: user.id, role: user.role.nom },
-        process.env.SECRET,
+        config.secret,
         {
           expiresIn: 86400, // 24 hours
         }
