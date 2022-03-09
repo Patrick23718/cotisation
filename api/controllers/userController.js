@@ -1,10 +1,8 @@
-// const config = require("../config/auth.config");
 const db = require("../models");
 const User = db.user;
-// const Code = db.code;
+const Code = db.code;
 const Role = db.role;
 const axios = require("axios");
-const config = require("../config/auth.config");
 
 const ROLES = db.ROLES;
 const mongoose = require("mongoose");
@@ -79,7 +77,7 @@ exports.signin = (req, res) => {
       }
       var token = jwt.sign(
         { id: user.id, role: user.role.nom },
-        config.secret,
+        process.env.SECRET,
         {
           expiresIn: 86400, // 24 hours
         }
@@ -103,7 +101,7 @@ exports.logout = (req, res) => {
 
 exports.getCurrentUser = (req, res) => {
   User.findById(req.userId)
-    .select("_id nom prenom imageURL adresse numero role createdAt updatedAt")
+    .select("_id nom prenom imageURL adresse numero")
     // .populate("role", "-__v")
     .exec((err, user) => {
       if (err) {
@@ -244,63 +242,116 @@ exports.updateStatus = (req, res) => {
     });
 };
 
-// exports.initPasswordReset = (req, res) => {
-//   User.findOne({
-//     numero: req.body.numero,
-//   }).exec((err, user) => {
-//     if (err) {
-//       res.status(500).send({ message: err });
-//       return;
-//     }
+exports.resetPassword = (req, res) => {
+  Code.findOne({ code: req.body.code })
+    // .populate("user")
+    .exec()
+    .then((result) => {
+      if (result) {
+        const date = new Date(result.createdAt).getTime();
+        const futureDate = new Date(
+          date + result.validity * 60000
+        ).toUTCString();
+        const todayDate = new Date().toUTCString();
+        if (todayDate < futureDate) {
+          User.findOneAndUpdate(
+            { _id: result.user },
+            { password: bcrypt.hashSync(req.body.password, 8) }
+          )
+            .then(() => {
+              Code.remove({ _id: result._id }).then(() => {
+                return res
+                  .status(200)
+                  .send({ message: "Mot de passe mis a jour" });
+              });
+            })
+            .catch((err) => {
+              return res.status(500).send({
+                message: "Erreur lors de la mise a jour du mot de passe",
+                error: err,
+              });
+            });
+        } else {
+          Code.remove({ _id: result._id }).then((test) => {
+            return res.status(200).send("Sup");
+          });
+        }
+      } else {
+        res
+          .status(400)
+          .send({ message: "Impossible de trouver le code demandé" });
+      }
+    });
+};
 
-//     newCode.save();
-//     if (user) {
-//       const codevalue = coupongenerator();
-//       const newCode = new Code({
-//         code: codevalue,
-//       });
-//       newCode
-//         .save()
-//         .then((result) => {
-//           const msg = `cher(e) ${user.prenom} ${user.nom}\nVOTRE CODE EST: ${result.code}`;
-//           const baseURL = `${process.env.SMS_API_HOST}?login=${SMS_API_LOGIN}&password=${SMS_API_PASSWORD}&sender_id=${SMS_API_SENDER_ID}&destinataire=${user.numero}&message=${msg}
-//       `;
-//           axios
-//             .get(baseURL)
-//             .then((rest) => {
-//               console.log(rest);
-//             })
-//             .catch((error) => {
-//               res.status(400).send(error);
-//             });
-//           res.status(201).json({
-//             message: "Vous allez recevoir un message avec votre code",
-//             result,
-//           });
-//         })
-//         .catch((err) => {
-//           //   console.log(err);
-//           res.status(500).json({
-//             error: err,
-//           });
-//         });
-//       console.log(user);
-//     } else {
-//       return res.status(500).send({ message: "faux" });
-//     }
-//   });
-// };
+exports.initPasswordReset = (req, res) => {
+  User.findOne({
+    numero: req.body.numero,
+  }).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
 
-// function coupongenerator() {
-//   var code = "";
-//   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-//   for (var i = 0; i < 4; i++) {
-//     code += possible.charAt(Math.floor(Math.random() * possible.length));
-//   }
-//   console.log(test(code));
-//   for (var i = 0; test(code); i++) return code;
-// }
+    // const code = codegenerator();
 
-// function test(code) {
-//   return Code.findOne({ code });
-// }
+    // const newCode = new Code({
+
+    //   code: code,
+    // });
+
+    // newCode.save();
+    if (user) {
+      const codevalue = codegenerator();
+      const newCode = new Code({
+        user: user._id,
+        code: codevalue,
+      });
+      newCode
+        .save()
+        .then((result) => {
+          const msg = `Cher(e) ${user.prenom} ${user.nom}\nvotre code est: ${result.code}`;
+          const baseURL = `${process.env.SMS_API_HOST}?login=${process.env.SMS_API_LOGIN}&password=${process.env.SMS_API_PASSWORD}&sender_id=${process.env.SMS_API_SENDER_ID}&destinataire=${user.numero}&message=${msg}
+      `;
+          axios.get(baseURL);
+          // .then((rest) => {
+          //   console.log(rest);
+          // })
+          // .catch((error) => {
+          //   console.log({
+          //     message: "Opps",
+          //     error: error,
+          //   });
+          //   // res.status(400).send(error);
+          // });
+          res.status(201).json({
+            message: "Vous allez recevoir un message avec votre code",
+            result,
+          });
+        })
+        .catch((err) => {
+          //   console.log(err);
+          res.status(500).json({
+            error: "cool",
+          });
+        });
+      console.log(user);
+    } else {
+      return res.status(500).send({ message: "faux" });
+    }
+  });
+};
+
+function codegenerator() {
+  var code = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  for (var i = 0; i < 4; i++) {
+    code += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  console.log(test(code));
+  for (var i = 0; test(code); i++) return code;
+}
+
+function test(code) {
+  return Code.findOne({ code });
+}

@@ -8,6 +8,12 @@ const ResetCodeSchema = new mongoose.Schema(
       minlength: 4,
     },
 
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: "utilisateur",
+      required: true,
+    },
+
     validity: {
       type: Number,
       required: true,

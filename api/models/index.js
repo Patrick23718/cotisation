@@ -8,6 +8,9 @@ db.mongoose = mongoose;
 db.user = require("./User");
 db.role = require("./Role");
 db.code = require("./ResetCode");
+db.categorie = require("./Categorie");
+db.produit = require("./Produit");
+db.epargne = require("./Epargne");
 
 db.ROLES = ["client", "admin"];
 

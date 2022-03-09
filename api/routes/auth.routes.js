@@ -38,5 +38,7 @@ module.exports = function (app) {
     controller.updateUserImage
   );
 
-  //   app.post("/auth/resetpasswordcode", controller.initPasswordReset);
+  app.post("/resetpasswordcode", controller.initPasswordReset);
+
+  app.post("/resetpassword", controller.resetPassword);
 };

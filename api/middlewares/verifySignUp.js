@@ -17,7 +17,6 @@ checkDuplicateUsername = (req, res, next) => {
   //       return;
   //     }
 
-  // Email
   User.findOne({
     numero: req.body.numero,
   }).exec((err, user) => {

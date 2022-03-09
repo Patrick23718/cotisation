@@ -57,7 +57,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 db.mongoose
   .connect(
-    `${dbConfig.URL}`,
+    `${process.env.DB_URL}`,
     // `${process.env.DB_URL}`,
     // `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
     {
@@ -75,6 +75,8 @@ db.mongoose
   });
 
 require("./api/routes/auth.routes")(app);
+require("./api/routes/category.routes")(app);
+require("./api/routes/produit.routes")(app);
 
 function initial() {
   Role.estimatedDocumentCount((err, count) => {
