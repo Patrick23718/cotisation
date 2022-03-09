@@ -1,5 +1,5 @@
 const { verifySignUp, authJwt } = require("../middlewares");
-const controller = require("../controllers/ProduitController");
+const controller = require("../controllers/produitController");
 const upload = require("../utils/profileUploads");
 
 module.exports = function (app) {
