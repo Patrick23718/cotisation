@@ -13,12 +13,28 @@ const EpargneSchema = new mongoose.Schema(
       ref: "produits",
       required: true,
     },
-    tranche: {
-      type: Number,
+
+    echeance: {
+      type: Date,
       required: true,
     },
+
+    montant: {
+      type: Number,
+      required: false,
+    },
+
+    status: {
+      type: String,
+      enum: ["progress", "finished", "pay"],
+      default: "progress",
+      required: true,
+    },
+
     frequence: {
       type: String,
+      enum: ["jour", "semaine", "mois"],
+      default: "jour",
       required: true,
     },
   },

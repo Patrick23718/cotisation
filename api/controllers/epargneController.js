@@ -3,17 +3,19 @@ const db = require("../models");
 const Epargne = db.epargne;
 
 exports.createEpargne = (req, res) => {
-  const epargne = {
-    client: req.body.client,
+  var epargne = {
+    client: req.userId,
     produit: req.body.produit,
-    tranche: req.body.tranche,
-    frequence: req.body.frequence,
+    echeance: req.body.echeance,
+    frequence: req.body.frequence || "jour",
   };
+  if (req.role == "admin") epargne.client = req.body.client;
+
   const newEpargne = new Epargne(epargne);
   newEpargne
     .save()
     .then((result) => {
-      return res.status(200).json(result);
+      return res.status(201).json(result);
     })
     .catch((err) => {
       return res.status(500).json(err);
@@ -23,6 +25,7 @@ exports.createEpargne = (req, res) => {
 exports.getAllEpargnes = (req, res) => {
   // const id = req.userId;
   Epargne.find()
+    .populate("client produit")
     .exec()
     .then((result) => {
       return res.status(200).json({
@@ -38,6 +41,7 @@ exports.getAllEpargnes = (req, res) => {
 exports.getAllUserEpargnes = (req, res) => {
   const id = req.userId;
   Epargne.find({ client: id })
+    .populate("client produit")
     .exec()
     .then((result) => {
       return res.status(200).json({
@@ -53,6 +57,7 @@ exports.getAllUserEpargnes = (req, res) => {
 exports.getEpargne = (req, res) => {
   //   const nom = req.query.nom;
   Epargne.findOne({ _id: req.params.id })
+    .populate("client produit")
     .exec()
     .then((result) => {
       return res.status(200).json(result);
@@ -66,6 +71,7 @@ exports.getUserEpargne = (req, res) => {
   //   const nom = req.query.nom;
   const id = req.userId;
   Epargne.findOne({ _id: req.params.id, client: id })
+    .populate("client produit")
     .exec()
     .then((result) => {
       return res.status(200).json(result);

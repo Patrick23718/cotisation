@@ -31,6 +31,8 @@ module.exports = function (app) {
     controller.changePassword
   );
 
+  // app.get("/users", [authJwt.verifyToken], controller.getCurrentUser);
+
   app.put(
     "/auth/updateimage",
     [authJwt.verifyToken],

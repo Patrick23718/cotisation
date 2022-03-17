@@ -5,6 +5,7 @@ const Category = db.categorie;
 exports.createCategory = (req, res) => {
   var cat = {
     nom: req.body.nom,
+    description: req.body.description,
   };
   if (req.body.description) cat.description = req.body.description;
   const newCat = new Category(cat);

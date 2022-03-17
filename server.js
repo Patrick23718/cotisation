@@ -4,7 +4,6 @@ var helmet = require("helmet");
 const bodyParser = require("body-parser");
 // const cors = require("cors");
 const db = require("./api/models");
-const dbConfig = require("./api/config/db.configs");
 
 const app = express();
 const Role = db.role;

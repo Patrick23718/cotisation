@@ -11,6 +11,7 @@ db.code = require("./ResetCode");
 db.categorie = require("./Categorie");
 db.produit = require("./Produit");
 db.epargne = require("./Epargne");
+db.versement = require("./Versement");
 
 db.ROLES = ["client", "admin"];
 
