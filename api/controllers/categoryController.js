@@ -7,7 +7,7 @@ exports.createCategory = (req, res) => {
     nom: req.body.nom,
     description: req.body.description,
   };
-  if (req.body.description) cat.description = req.body.description;
+  // if (req.body.description) cat.description = req.body.description;
   const newCat = new Category(cat);
   newCat
     .save()
@@ -21,13 +21,13 @@ exports.createCategory = (req, res) => {
 
 exports.getAllCategories = (req, res) => {
   //   const nom = req.query.nom;
-  Category.find({ isDelete: false })
+  Category.find({
+    isDelete: false,
+    nom: { $regex: new RegExp(req.query.nom, "i") },
+  })
     .exec()
     .then((result) => {
-      return res.status(200).json({
-        count: result.length,
-        result,
-      });
+      return res.status(200).json(result);
     })
     .catch((err) => {
       return res.status(500).json(err);

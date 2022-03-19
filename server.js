@@ -75,7 +75,7 @@ db.mongoose
 
 require("./api/routes/auth.routes")(app);
 require("./api/routes/produit.routes")(app);
-
+require("./api/routes/epargne.routes")(app);
 require("./api/routes/category.routes")(app);
 
 function initial() {

@@ -26,10 +26,7 @@ exports.getAllProduits = (req, res) => {
     .populate("category")
     .exec()
     .then((result) => {
-      return res.status(200).json({
-        count: result.length,
-        result,
-      });
+      return res.status(200).json(result);
     })
     .catch((err) => {
       return res.status(500).json(err);
@@ -42,10 +39,7 @@ exports.getAllProduitsFromCategory = (req, res) => {
     .populate("category")
     .exec()
     .then((result) => {
-      return res.status(200).json({
-        count: result.length,
-        result,
-      });
+      return res.status(200).json(result);
     })
     .catch((err) => {
       return res.status(500).json(err);

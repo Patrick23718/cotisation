@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const { param } = require("express/lib/request");
 
 exports.signup = (req, res) => {
   if (req.body.password != req.body.confirmation_password) {
@@ -101,7 +102,7 @@ exports.logout = (req, res) => {
 
 exports.getCurrentUser = (req, res) => {
   User.findById(req.userId)
-    .select("_id nom prenom imageURL adresse numero")
+    .select("_id nom prenom imageURL adresse numero docs")
     // .populate("role", "-__v")
     .exec((err, user) => {
       if (err) {
@@ -195,6 +196,59 @@ exports.updateUserImage = (req, res) => {
   userData.imageURL = req.file.path;
 
   User.update({ _id: req.userId }, { $set: userData })
+    .exec()
+    .then((resultat) => {
+      if (!resultat)
+        return res.status(404).json({
+          message: "Oups!! aucune information pour l'identifiant fourni",
+        });
+      res.status(200).json({
+        message: "Mise à jour reussie",
+        doc: resultat,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        message: "Oups!! une erreur est survenue sur le serveur",
+        error: err,
+      });
+    });
+};
+
+exports.updateUserCNIImage = (req, res) => {
+  let userData = {
+    imageURL: req.file.path,
+    type: req.body.type || "cni",
+    verified: false,
+  };
+
+  User.update({ _id: req.userId }, { $push: { docs: userData } })
+    .exec()
+    .then((resultat) => {
+      if (!resultat)
+        return res.status(404).json({
+          message: "Oups!! aucune information pour l'identifiant fourni",
+        });
+      res.status(200).json({
+        message: "Mise à jour reussie",
+        doc: resultat,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        message: "Oups!! une erreur est survenue sur le serveur",
+        error: err,
+      });
+    });
+};
+
+exports.updateUserRemoveCNIImage = (req, res) => {
+  User.update(
+    { _id: req.userId },
+    { $pull: { docs: { _id: req.params.id, verified: false } } }
+  )
     .exec()
     .then((resultat) => {
       if (!resultat)
@@ -355,3 +409,13 @@ function codegenerator() {
 function test(code) {
   return Code.findOne({ code });
 }
+
+exports.getAllUsers = (req, res) => {
+  User.find({})
+    .select("nom prenom role adresse numero imageURL createdAt")
+    .sort({ createdAt: 1 })
+    .exec()
+    .then((result) => {
+      return res.status(200).json(result);
+    });
+};

@@ -42,6 +42,19 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+    docs: [
+      {
+        imageURL: { type: String, required: false },
+        type: {
+          type: String,
+          enum: ["cni", "passport"],
+          default: "cni",
+          required: true,
+        },
+        verified: { type: Boolean, default: false, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

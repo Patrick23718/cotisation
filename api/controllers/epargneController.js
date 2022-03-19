@@ -4,12 +4,12 @@ const Epargne = db.epargne;
 
 exports.createEpargne = (req, res) => {
   var epargne = {
-    client: req.userId,
+    // client: req.role == "admin" ? req.body.client : req.userId,
+    client: req.body.client,
     produit: req.body.produit,
     echeance: req.body.echeance,
-    frequence: req.body.frequence || "jour",
+    frequence: req.body.frequence,
   };
-  if (req.role == "admin") epargne.client = req.body.client;
 
   const newEpargne = new Epargne(epargne);
   newEpargne
@@ -69,7 +69,7 @@ exports.getEpargne = (req, res) => {
 
 exports.getUserEpargne = (req, res) => {
   //   const nom = req.query.nom;
-  const id = req.userId;
+  const id = req.userId || req.query.uid;
   Epargne.findOne({ _id: req.params.id, client: id })
     .populate("client produit")
     .exec()
