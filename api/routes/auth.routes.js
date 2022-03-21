@@ -24,6 +24,12 @@ module.exports = function (app) {
 
   app.get("/profile", [authJwt.verifyToken], controller.getCurrentUser);
 
+  app.get(
+    "/profile/:uid",
+    [authJwt.verifyToken, authJwt.isAdmin],
+    controller.getUser
+  );
+
   app.put("/auth/update", [authJwt.verifyToken], controller.updateUser);
 
   app.put(

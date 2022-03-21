@@ -22,9 +22,13 @@ exports.createCategory = (req, res) => {
 exports.getAllCategories = (req, res) => {
   //   const nom = req.query.nom;
   Category.find({
-    isDelete: false,
-    nom: { $regex: new RegExp(req.query.nom, "i") },
+    isDelete: req.query.delete || false,
+    $or: [
+      { nom: { $regex: new RegExp(req.query.nom, "i") } },
+      { description: { $regex: new RegExp(req.query.nom, "i") } },
+    ],
   })
+    .sort({ createdAt: -1 })
     .exec()
     .then((result) => {
       return res.status(200).json(result);
@@ -60,7 +64,10 @@ exports.updateCategory = (req, res) => {
 };
 
 exports.archiveCategory = (req, res) => {
-  Category.findByIdAndUpdate({ _id: req.params.id }, { isDelete: true })
+  Category.findByIdAndUpdate(
+    { _id: req.params.id },
+    { isDelete: req.query.delete }
+  )
     .then((result) => {
       return res.status(200).json(result);
     })

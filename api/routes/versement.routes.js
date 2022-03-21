@@ -1,5 +1,5 @@
 const { verifySignUp, authJwt } = require("../middlewares");
-const controller = require("../controllers/epargneController");
+const controller = require("../controllers/versementController");
 const upload = require("../utils/profileUploads");
 
 module.exports = function (app) {
@@ -11,6 +11,10 @@ module.exports = function (app) {
     next();
   });
 
-  app.get("/epargne", [authJwt.verifyToken], controller.getUserEpargne);
-  app.post("/epargne", [authJwt.verifyToken], controller.createEpargne);
+  app.get(
+    "/versement/:Eid",
+    [authJwt.verifyToken],
+    controller.getUserVersement
+  );
+  app.post("/versement", [authJwt.verifyToken], controller.createVersement);
 };

@@ -77,10 +77,10 @@ exports.signin = (req, res) => {
         });
       }
       var token = jwt.sign(
-        { id: user.id, role: user.role.nom },
+        { id: user.id, role: user.role },
         process.env.SECRET,
         {
-          expiresIn: 86400, // 24 hours
+          expiresIn: 86400, //86400 24 hours
         }
       );
 
@@ -102,7 +102,25 @@ exports.logout = (req, res) => {
 
 exports.getCurrentUser = (req, res) => {
   User.findById(req.userId)
-    .select("_id nom prenom imageURL adresse numero docs")
+    .select("_id nom prenom imageURL role adresse numero docs")
+    // .populate("role", "-__v")
+    .exec((err, user) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      } else {
+        res.status(200).send(user);
+      }
+    });
+};
+
+exports.getUser = (req, res) => {
+  User.findById(req.params.uid)
+    .select("_id nom prenom imageURL role adresse numero docs")
     // .populate("role", "-__v")
     .exec((err, user) => {
       if (err) {

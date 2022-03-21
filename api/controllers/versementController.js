@@ -4,15 +4,15 @@ const Versement = db.versement;
 const Epargne = db.epargne;
 
 exports.createVersement = (req, res) => {
+  console.log(req.body.epargne);
   Epargne.findById(req.body.epargne)
     .exec()
     .then((result) => {
-      if (!result || result == null)
+      if (!result || result == null) {
+        console.log(result);
         return res.status(404).json({ message: "L'epargne n'existe pas" });
-
-      var uid = req.userId;
-
-      if (req.role === "admin") uid = result.client;
+      }
+      const uid = req.role === "admin" ? result.client : req.userId;
 
       if (result.status !== "progress")
         return res.status(400).json({ message: "L'epargne est complete" });
@@ -34,5 +34,35 @@ exports.createVersement = (req, res) => {
         .catch((err) => {
           res.status(500).json({ message: "Erreur de serveur", error: err });
         });
+    });
+};
+
+exports.getUserVersement = (req, res) => {
+  Epargne.findOne({
+    _id: req.params.Eid,
+    client: req.role === "admin" ? req.query.userId : req.userId,
+  })
+    .populate("produit")
+    .exec()
+    .then((result) => {
+      if (result) {
+        Versement.find({ epargne: result._id })
+          .sort({ createdAt: -1 })
+          .exec()
+          .then((docs) => {
+            mont = 0;
+            for (i = 0; i < docs.length; i++) {
+              mont += docs[i].montant;
+            }
+            return res
+              .status(200)
+              .send({ versements: docs, payer: mont, epargne: result });
+          });
+      } else {
+        return res.status(404).json({ message: "Aucune epargne trouvée" });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ message: "Erreur de serveur", error: err });
     });
 };

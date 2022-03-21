@@ -13,6 +13,7 @@ verifyToken = (req, res, next) => {
   try {
     jwt.verify(token, process.env.SECRET, (err, decoded) => {
       if (err) {
+        req.role = "";
         return res.status(401).send({ message: "Vous devez vous connecter!" });
       }
       req.userId = decoded.id;
@@ -20,6 +21,7 @@ verifyToken = (req, res, next) => {
       next();
     });
   } catch (error) {
+    req.role = "";
     return res.status(500).json(error);
   }
 };

@@ -77,6 +77,7 @@ require("./api/routes/auth.routes")(app);
 require("./api/routes/produit.routes")(app);
 require("./api/routes/epargne.routes")(app);
 require("./api/routes/category.routes")(app);
+require("./api/routes/versement.routes")(app);
 
 function initial() {
   Role.estimatedDocumentCount((err, count) => {
