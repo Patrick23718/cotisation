@@ -29,7 +29,6 @@ app.use(
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  app.header("Cross-Origin-Resource-Policy", "same-site");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-access-token"
