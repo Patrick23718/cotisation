@@ -2,7 +2,7 @@ const express = require("express");
 var helmet = require("helmet");
 
 const bodyParser = require("body-parser");
-// const cors = require("cors");
+const cors = require("cors");
 const db = require("./api/models");
 
 const app = express();
@@ -42,11 +42,11 @@ app.use((req, res, next) => {
 
 app.use("/uploads", express.static("uploads"));
 
-// var corsOptions = {
-//   origin: "http://localhost:8080",
-// };
+var corsOptions = {
+  origin: "*",
+};
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());

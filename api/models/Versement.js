@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Epargne = require("./Epargne");
 
 const VersementSchema = new mongoose.Schema(
   {
