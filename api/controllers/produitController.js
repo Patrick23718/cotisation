@@ -22,7 +22,14 @@ exports.createProduit = (req, res) => {
 
 exports.getAllProduits = (req, res) => {
   //   const nom = req.query.nom;
-  Produit.find({ isDelete: false })
+  Produit.find({
+    isDelete: req.query.del || false,
+    $or: [
+      { nom: { $regex: new RegExp(req.query.s, "i") } },
+      { description: { $regex: new RegExp(req.query.s, "i") } },
+    ],
+  })
+    .sort({ category: 1 })
     .populate("category")
     .exec()
     .then((result) => {

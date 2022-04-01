@@ -22,6 +22,7 @@ exports.signup = (req, res) => {
     nom: req.body.nom,
     prenom: req.body.prenom,
     adresse: req.body.adresse,
+    role: req.body.role || "client",
     numero: req.body.numero,
     password: bcrypt.hashSync(req.body.password, 8),
   });
@@ -429,7 +430,14 @@ function test(code) {
 }
 
 exports.getAllUsers = (req, res) => {
-  User.find({})
+  User.find({
+    $or: [
+      { nom: { $regex: new RegExp(req.query.s, "i") } },
+      { prenom: { $regex: new RegExp(req.query.s, "i") } },
+      { adresse: { $regex: new RegExp(req.query.s, "i") } },
+      { numero: { $regex: new RegExp(req.query.s, "i") } },
+    ],
+  })
     .select("nom prenom role adresse numero imageURL createdAt")
     .sort({ createdAt: 1 })
     .exec()

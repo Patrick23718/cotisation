@@ -10,7 +10,9 @@ const Role = db.role;
 const dotenv = require("dotenv");
 dotenv.config();
 
-app.use(helmet());
+app.use(
+  helmet({ crossOriginResourcePolicy: false, crossOriginEmbedderPolicy: false })
+);
 app.disable("x-powered-by");
 
 app.use(
