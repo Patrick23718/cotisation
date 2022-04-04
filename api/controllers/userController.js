@@ -437,6 +437,7 @@ exports.getAllUsers = (req, res) => {
       { adresse: { $regex: new RegExp(req.query.s, "i") } },
       { numero: { $regex: new RegExp(req.query.s, "i") } },
     ],
+    role: req.query.role || "client",
   })
     .select("nom prenom role adresse numero imageURL createdAt")
     .sort({ createdAt: 1 })

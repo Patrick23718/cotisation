@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema(
         imageURL: { type: String, required: false },
         type: {
           type: String,
-          enum: ["cni", "passport"],
+          enum: ["cniAvant", "cniArriere", "passport"],
           default: "cni",
           required: true,
         },

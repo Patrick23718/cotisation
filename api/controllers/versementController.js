@@ -62,6 +62,38 @@ exports.createVersement = (req, res) => {
     });
 };
 
+exports.getVersement = async (req, res) => {
+  try {
+    const versement = await Versement.find({})
+      .populate({
+        path: "epargne",
+        populate: {
+          path: "client",
+          select: ["nom", "prenom", "adresse", "numero", "imageURL"],
+        },
+      })
+      .populate({
+        path: "epargne",
+        populate: {
+          path: "produit",
+          populate: {
+            path: "category",
+            select: ["nom", "description"],
+          },
+          select: ["nom", "prix", "category", "description"],
+        },
+      })
+      .sort({ createdAt: -1 })
+      .limit(20);
+    return res.status(200).send(versement);
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .send({ message: "Erreur de serveur", error: err.toString() });
+  }
+};
+
 exports.getUserVersement = (req, res) => {
   Epargne.findOne({
     _id: req.params.Eid,

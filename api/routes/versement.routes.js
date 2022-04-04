@@ -11,10 +11,12 @@ module.exports = function (app) {
     next();
   });
 
+  app.get("/versement/all", [authJwt.verifyToken], controller.getVersement);
   app.get(
     "/versement/:Eid",
     [authJwt.verifyToken],
     controller.getUserVersement
   );
+
   app.post("/versement", [authJwt.verifyToken], controller.createVersement);
 };
